@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -16,7 +17,9 @@ public class ListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        ArrayList<User> userList = new ArrayList<User>();
+        DBHandler db = new DBHandler(this);
+
+
         for (int i = 0; i < 20; i++){
             Random randomNo = new Random();
 
@@ -25,11 +28,15 @@ public class ListActivity extends AppCompatActivity {
             String userDescription = "Description " + Math.abs(randomNo.nextInt()/1000);
             boolean userIsFollowing = randomNo.nextInt(2)==1;
 
-            userList.add(new User(userName, userDescription, userId, userIsFollowing));
+            User newUser = new User(userName, userDescription, userId, userIsFollowing);
+
+            db.insertUser(newUser);
         }
 
+        ArrayList<User> userArrayList = db.getUser();
+
         RecyclerView profile_rcv = findViewById(R.id.profile_rcv);
-        ProfileAdapter profileAdapter = new ProfileAdapter(userList);
+        ProfileAdapter profileAdapter = new ProfileAdapter(userArrayList);
         LinearLayoutManager layout = new LinearLayoutManager(this);
 
         profile_rcv.setLayoutManager(layout);
