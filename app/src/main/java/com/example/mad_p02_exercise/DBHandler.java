@@ -57,8 +57,9 @@ public class DBHandler extends SQLiteOpenHelper {
 
         ArrayList<User> dbUserList = new ArrayList<>();
 
-        User dbUser = new User();
         while (cursor.moveToNext()){
+            User dbUser = new User();
+
             dbUser.setUserName(cursor.getString(0));
             dbUser.setUserDescription(cursor.getString(1));
             dbUser.setUserId(cursor.getInt(2));
@@ -68,5 +69,20 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         db.close();
         return dbUserList;
+    }
+
+    public void updateUser(User userToUpdate){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String updateQuery = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + "= \"" + userToUpdate.getUserName() + "\"";
+        Cursor cursor = db.rawQuery(updateQuery, null);
+
+        ContentValues userValues = new ContentValues();
+        userValues.put(COLUMN_USERNAME, userToUpdate.getUserName());
+        userValues.put(COLUMN_USERDESCRIPTION, userToUpdate.getUserDescription());
+        userValues.put(COLUMN_USERID, userToUpdate.getUserId());
+        userValues.put(COLUMN_USERFOLLOWED, userToUpdate.getUserFollowed());
+
+        db.update(TABLE_USERS, userValues, COLUMN_USERID + " = ?", new String[]{String.valueOf(userToUpdate.getUserId())});
     }
 }
